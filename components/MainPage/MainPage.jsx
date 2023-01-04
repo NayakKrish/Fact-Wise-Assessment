@@ -1,110 +1,94 @@
 import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import {
-  useGetCharacterDetailsQuery,
-  useGetCharactersLocationDataQuery,
-} from "../../redux/baseApiSlice";
+import SearchIcon from "@mui/icons-material/Search";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CreateIcon from "@mui/icons-material/Create";
 
 const MainPage = () => {
-  const [pageNo, setPageNo] = useState(1);
-  const { data } = useGetCharacterDetailsQuery({ pageNo: pageNo });
-  const [CharacterData, setCharacterData] = useState(
-    data?.results ? data?.results : []
-  );
-  const [locationData, setLocationData] = useState();
-  const { data: LocationData } = useGetCharactersLocationDataQuery({
-    url: locationData,
-  });
-
-  const fetchData = () => {
-    setPageNo(pageNo + 1);
-  };
-
-  useEffect(() => {
-    if (data) {
-      setCharacterData([...CharacterData, ...data?.results]);
-    }
-  }, [data]);
-
-  // const CharacterData = data?.results;
-  console.log("krish", data);
+  const [openDetails, setOpenDetails] = useState(false);
   return (
     <>
       <Main>
-        <TitleDiv>
-          <h1>Rick & Morty</h1>
-        </TitleDiv>
-
-        {/* <MainContainer> */}
-        <InfiniteScroll
-          dataLength={CharacterData?.length ? CharacterData?.length : 0} //This is important field to render the next data
-          next={fetchData}
-          hasMore={CharacterData?.length > 0 ? true : false}
-          loader={<h4>Loading...</h4>}
-          endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          }
-          style={{
-            width: "100%",
-            overflow: "visible",
-            display: "flex",
-            justifyContent: "space-evenly",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          {CharacterData?.map(
-            (
-              {
-                gender,
-                id,
-                status,
-                species,
-                name,
-                image,
-                created,
-                location: { url },
-              },
-              index
-            ) => {
+        <SearchBar>
+          <SearchIcon />
+          <SearchInput type={"search"} placeholder={"Search User"} />
+        </SearchBar>
+        <UserListMainContainer>
+          {Data.map(
+            ({
+              id,
+              first,
+              last,
+              dob,
+              gender,
+              email,
+              picture,
+              country,
+              description,
+            }) => {
               return (
-                <CharacterCard key={index}>
-                  <div>
-                    <img
-                      src={image}
-                      alt="demoimg"
-                      width={"100%"}
-                      height={"50%"}
-                    />
-                  </div>
-                  <div>
-                    <h3>{name}</h3>
-                    <InfoDiv>
-                      <TitleTexts>Status:</TitleTexts>
-                      <DetailsTexts>{status}</DetailsTexts>
-                    </InfoDiv>
-                    <InfoDiv>
-                      <TitleTexts>Species:</TitleTexts>
-                      <DetailsTexts>{species}</DetailsTexts>
-                    </InfoDiv>
-                    <InfoDiv>
-                      <TitleTexts>Gender:</TitleTexts>
-                      <DetailsTexts>{gender}</DetailsTexts>
-                    </InfoDiv>
-                    <InfoDiv>
-                      <TitleTexts>Created:</TitleTexts>
-                      <DetailsTexts>{created}</DetailsTexts>
-                    </InfoDiv>
-                  </div>
-                </CharacterCard>
+                <>
+                  <IndividualUserCard
+                    key={id}
+                    onClick={() => setOpenDetails(id)}
+                  >
+                    <InitialCardDiv>
+                      <IconandNameMainDiv>
+                        <UserPicture src={picture} />
+                        <p style={{ fontWeight: "400", fontSize: "2.5vh" }}>
+                          {first} {last}
+                        </p>
+                      </IconandNameMainDiv>
+                      <KeyboardArrowDownIcon />
+                    </InitialCardDiv>
+                    {openDetails === id ? (
+                      <div style={{ width: "100%" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            width: "100%",
+                          }}
+                        >
+                          <div>
+                            <TitleText>Age</TitleText>
+                            <InfoText>19 Years</InfoText>
+                          </div>
+                          <div>
+                            <TitleText>Gender</TitleText>
+                            <InfoText>{gender}</InfoText>
+                          </div>
+                          <div>
+                            <TitleText>Country</TitleText>
+                            <InfoText>{country}</InfoText>
+                          </div>
+                        </div>
+                        <div>
+                          <TitleText>Description</TitleText>
+                          <InfoText>{description}</InfoText>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            alignItems: "center",
+                          }}
+                        >
+                          <DeleteIcon
+                            style={{ color: "red", marginRight: "1vh" }}
+                          />
+                          <CreateIcon style={{ color: "blue" }} />
+                        </div>
+                      </div>
+                    ) : null}
+                  </IndividualUserCard>
+                </>
               );
             }
           )}
-        </InfiniteScroll>
-        {/* </MainContainer> */}
+        </UserListMainContainer>
       </Main>
     </>
   );
@@ -112,45 +96,321 @@ const MainPage = () => {
 
 export default MainPage;
 
-const Main = styled("div")({});
-
-const MainContainer = styled("div")({
-  display: "flex",
-  justifyContent: "space-evenly",
-  alignItems: "center",
-  flexWrap: "wrap",
-});
-
-const TitleDiv = styled("div")({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  backgroundColor: "#bcc5ce",
-});
-const CharacterCard = styled("div")({
-  boxShadow: "3px 4px 15px grey",
-  margin: "2vh",
-  borderRadius: "1vh",
-  // width: "25%",
+const Main = styled("div")({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
   alignItems: "center",
-  padding: "2vh",
-  // backgroundColor: "grey",
+  padding: "5%",
 });
-const InfoDiv = styled("div")({
+const SearchBar = styled("div")({
+  display: "flex",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  border: "1px solid grey",
+  padding: "1vh",
+  borderRadius: "1vh",
+  width: "40%",
+});
+const SearchInput = styled("input")({
+  padding: "1vh",
+  borderRadius: "1vh",
+  border: "0px solid grey",
+  flex: 1,
+  ":focus": {
+    outline: "none",
+  },
+});
+const UserListMainContainer = styled("div")({
+  width: "100%",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+});
+const IndividualUserCard = styled("div")({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "space-between",
+  border: "1px solid lightgrey",
+  cursor: "pointer",
+  padding: "1vh 2vh",
+  borderRadius: "1vh",
+  width: "40%",
+  marginTop: "2%",
+  boxShadow: "1px 1px 3px grey",
+  // ":hover": {
+  //   backgroundColor: "#f5f5f5",
+  // },
+});
+const InitialCardDiv = styled("div")({
   display: "flex",
   alignItems: "center",
-  margin: "1vh",
+  justifyContent: "space-between",
+  width: "100%",
 });
-const TitleTexts = styled("p")({
+const IconandNameMainDiv = styled("div")({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  flex: 1,
+});
+const UserPicture = styled("img")({
+  width: "4vw",
+  borderRadius: "50%",
+  boxShadow: "2px 3px 4px grey",
+  marginRight: "5%",
+});
+const TitleText = styled("p")({
+  color: "grey",
+  padding: 0,
+  marginBottom: "1vh",
+});
+const InfoText = styled("p")({
   padding: 0,
   margin: 0,
-  fontWeight: "bold",
 });
-const DetailsTexts = styled("p")({
-  padding: 0,
-  margin: 0,
-  marginLeft: "1vw",
-});
+
+const Data = [
+  {
+    id: 1,
+    first: "Aidan",
+    last: "Wang",
+    dob: "1973-10-16",
+    gender: "male",
+    email: "aidan.wang@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/93.jpg",
+    country: "New Zealand",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Aidan Wang. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Aidan Wang.",
+  },
+  {
+    id: 2,
+    first: "Anna",
+    last: "Horten",
+    dob: "1972-03-15",
+    gender: "female",
+    email: "anna.horten@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/48.jpg",
+    country: "Norway",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Anna Horten. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Anna Horten.",
+  },
+  {
+    id: 3,
+    first: "Max",
+    last: "Arnold",
+    dob: "1954-04-22",
+    gender: "male",
+    email: "max.arnold@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/27.jpg",
+    country: "Ireland",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Max Arnold. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Max Arnold.",
+  },
+  {
+    id: 4,
+    first: "محمدپارسا",
+    last: "صدر",
+    dob: "1953-06-01",
+    gender: "male",
+    email: "mhmdprs.sdr@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/34.jpg",
+    country: "Iran",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to محمدپارسا صدر. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of محمدپارسا صدر.",
+  },
+  {
+    id: 5,
+    first: "Emilia",
+    last: "Gonzalez",
+    dob: "1949-10-07",
+    gender: "female",
+    email: "emilia.gonzalez@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/90.jpg",
+    country: "Spain",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Emilia Gonzalez. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Emilia Gonzalez.",
+  },
+  {
+    id: 6,
+    first: "Alicia",
+    last: "Ma",
+    dob: "1995-11-23",
+    gender: "female",
+    email: "alicia.ma@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/91.jpg",
+    country: "Canada",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Alicia Ma. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Alicia Ma.",
+  },
+  {
+    id: 7,
+    first: "یاسمن",
+    last: "كامياران",
+    dob: "1985-06-24",
+    gender: "female",
+    email: "ysmn.kmyrn@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/64.jpg",
+    country: "Iran",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to یاسمن كامياران. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of یاسمن كامياران.",
+  },
+  {
+    id: 8,
+    first: "Reingard",
+    last: "Barz",
+    dob: "1985-03-24",
+    gender: "female",
+    email: "reingard.barz@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/95.jpg",
+    country: "Germany",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Reingard Barz. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Reingard Barz.",
+  },
+  {
+    id: 9,
+    first: "Felix",
+    last: "Douglas",
+    dob: "1984-07-05",
+    gender: "male",
+    email: "felix.douglas@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/53.jpg",
+    country: "United Kingdom",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Felix Douglas. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Felix Douglas.",
+  },
+  {
+    id: 10,
+    first: "Claire",
+    last: "Robertson",
+    dob: "2006-04-16",
+    gender: "female",
+    email: "claire.robertson@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/75.jpg",
+    country: "United States",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Claire Robertson. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Claire Robertson.",
+  },
+  {
+    id: 11,
+    first: "Ümit",
+    last: "Taşlı",
+    dob: "2004-10-17",
+    gender: "male",
+    email: "umit.tasli@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/80.jpg",
+    country: "Turkey",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Ümit Taşlı. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Ümit Taşlı.",
+  },
+  {
+    id: 12,
+    first: "Tiemo",
+    last: "Monshouwer",
+    dob: "1956-09-11",
+    gender: "male",
+    email: "tiemo.monshouwer@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/16.jpg",
+    country: "Netherlands",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Tiemo Monshouwer. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Tiemo Monshouwer.",
+  },
+  {
+    id: 13,
+    first: "Dorian",
+    last: "Carpentier",
+    dob: "1963-10-06",
+    gender: "male",
+    email: "dorian.carpentier@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/77.jpg",
+    country: "France",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Dorian Carpentier. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Dorian Carpentier.",
+  },
+  {
+    id: 14,
+    first: "آرمیتا",
+    last: "موسوی",
+    dob: "1968-07-19",
+    gender: "female",
+    email: "armyt.mwswy@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/59.jpg",
+    country: "Iran",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to آرمیتا موسوی. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of آرمیتا موسوی.",
+  },
+  {
+    id: 15,
+    first: "Lias",
+    last: "Korsvik",
+    dob: "1969-12-09",
+    gender: "male",
+    email: "lias.korsvik@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/69.jpg",
+    country: "Norway",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Lias Korsvik. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Lias Korsvik.",
+  },
+  {
+    id: 16,
+    first: "Florence",
+    last: "Cooper",
+    dob: "1989-08-31",
+    gender: "female",
+    email: "florence.cooper@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/19.jpg",
+    country: "Ireland",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Florence Cooper. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Florence Cooper.",
+  },
+  {
+    id: 17,
+    first: "Donald",
+    last: "Harrison",
+    dob: "1947-12-20",
+    gender: "male",
+    email: "donald.harrison@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/34.jpg",
+    country: "United Kingdom",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Donald Harrison. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Donald Harrison.",
+  },
+  {
+    id: 18,
+    first: "Michael",
+    last: "Nichols",
+    dob: "1963-06-26",
+    gender: "male",
+    email: "michael.nichols@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/76.jpg",
+    country: "United Kingdom",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Michael Nichols. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Michael Nichols.",
+  },
+  {
+    id: 19,
+    first: "Emile",
+    last: "Miller",
+    dob: "2009-02-03",
+    gender: "male",
+    email: "emile.miller@example.com",
+    picture: "https://randomuser.me/api/portraits/med/men/24.jpg",
+    country: "Canada",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Emile Miller. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Emile Miller.",
+  },
+  {
+    id: 20,
+    first: "Marjella",
+    last: "Stuijt",
+    dob: "2014-11-11",
+    gender: "female",
+    email: "marjella.stuijt@example.com",
+    picture: "https://randomuser.me/api/portraits/med/women/31.jpg",
+    country: "Netherlands",
+    description:
+      "This character description generator will generate a fairly random description of a belonging to Marjella Stuijt. However, some aspects of the descriptions will remain the same, this is done to keep the general structure the same, while still randomizing the important details of Marjella Stuijt.",
+  },
+];
