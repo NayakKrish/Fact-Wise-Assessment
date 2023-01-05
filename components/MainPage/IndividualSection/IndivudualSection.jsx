@@ -23,20 +23,42 @@ const IndivudualSection = ({
 }) => {
   const [openDetails, setOpenDetails] = useState(false);
   const [editable, setEditable] = useState(false);
-  const [name, setName] = useState(First + " " + Last);
+  const [name, setName] = useState(First + Last);
   const [age, setAge] = useState(Dob);
   const [gender, setGender] = useState(Gender);
   const [country, setCountry] = useState(Country);
   const [description, setDescription] = useState(Description);
+  const [stateChange, setStateChange] = useState(false);
+
+  const OnChangeFunc = (e, type) => {
+    setStateChange(true);
+    if (type == "name") {
+      setName(e.target.value);
+    }
+    if (type == "age") {
+      setAge(e.target.value);
+    }
+    if (type == "gender") {
+      setGender(e.target.value);
+    }
+    if (type == "country") {
+      setCountry(e.target.value);
+    }
+    if (type == "desc") {
+      setDescription(e.target.value);
+    }
+  };
 
   return (
     <IndividualUserCard key={Id}>
-      <InitialCardDiv onClick={() => setOpenDetails(!openDetails)}>
+      <InitialCardDiv
+        onClick={() => (editable ? null : setOpenDetails(!openDetails))}
+      >
         <IconandNameMainDiv>
           <UserPicture src={Picture} />
           <NameInput
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={stateChange ? name : First + Last}
+            onChange={(e) => OnChangeFunc(e, "name")}
             disabled={!editable}
             style={{
               border: editable ? "1px solid lightgrey" : "0px",
@@ -53,24 +75,24 @@ const IndivudualSection = ({
               <TitleText>Age</TitleText>
               <AgeInput
                 type={"text"}
-                value={age}
+                value={stateChange ? age : Dob}
                 disabled={!editable}
                 style={{
                   border: editable ? "1px solid lightgrey" : "0px",
                 }}
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => OnChangeFunc(e, "age")}
               />
             </div>
             <div>
               <TitleText>Gender</TitleText>
               <GenderInput
-                value={gender}
+                value={stateChange ? gender : Gender}
                 disabled={!editable}
                 style={{
                   border: editable ? "1px solid lightgrey" : "0px",
                   backgroundColor: editable ? null : "#f5f5f5",
                 }}
-                onChange={(e) => setGender(e.target.value)}
+                onChange={(e) => OnChangeFunc(e, "gender")}
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
@@ -83,24 +105,24 @@ const IndivudualSection = ({
               <TitleText>Country</TitleText>
               <CountyInput
                 type={"text"}
-                value={country}
+                value={stateChange ? country : Country}
                 disabled={!editable}
                 style={{
                   border: editable ? "1px solid lightgrey" : "0px",
                 }}
-                onChange={(e) => setCountry(e.target.value)}
+                onChange={(e) => OnChangeFunc(e, "country")}
               />
             </div>
           </HorizontalInfoMain>
           <div>
             <TitleText>Description</TitleText>
             <DescriptionTextArea
-              value={description}
+              value={stateChange ? description : Description}
               disabled={!editable}
               style={{
                 border: editable ? "1px solid lightgrey" : "0px",
               }}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) => OnChangeFunc(e, "desc")}
             />
           </div>
           <div
@@ -112,8 +134,18 @@ const IndivudualSection = ({
           >
             {editable ? (
               <>
-                <CancelIcon onClick={() => setEditable(false)} />
-                <ApplyIcon />
+                <CancelIcon
+                  onClick={() => {
+                    setEditable(false);
+                    setStateChange(false);
+                  }}
+                />
+                <ApplyIcon
+                  onClick={() => {
+                    setEditable(false);
+                    setStateChange(true);
+                  }}
+                />
               </>
             ) : (
               <>

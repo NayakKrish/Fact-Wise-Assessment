@@ -8,44 +8,61 @@ import IndivudualSection from "./IndividualSection/IndivudualSection";
 
 const MainPage = () => {
   const [userData, setUserData] = useState(Data);
+  const [searchQuery, setSearchQuery] = useState("");
+
   console.log("krish", userData);
   return (
     <>
       <Main>
         <SearchBar>
           <SearchIcon />
-          <SearchInput type={"search"} placeholder={"Search User"} />
+          <SearchInput
+            type={"search"}
+            placeholder={"Search User"}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </SearchBar>
         <UserListMainContainer>
-          {userData.map(
-            ({
-              id,
-              first,
-              last,
-              dob,
-              gender,
-              email,
-              picture,
-              country,
-              description,
-            }) => {
-              return (
-                <IndivudualSection
-                  Id={id}
-                  First={first}
-                  Last={last}
-                  Dob={dob}
-                  Gender={gender}
-                  Email={email}
-                  Picture={picture}
-                  Country={country}
-                  Description={description}
-                  userData={userData}
-                  setUserData={setUserData}
-                />
-              );
-            }
-          )}
+          {userData
+            .filter((e) => {
+              if (searchQuery == "") {
+                return e;
+              } else {
+                return e.first
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase());
+              }
+            })
+            .map(
+              ({
+                id,
+                first,
+                last,
+                dob,
+                gender,
+                email,
+                picture,
+                country,
+                description,
+              }) => {
+                return (
+                  <IndivudualSection
+                    Id={id}
+                    First={first}
+                    Last={last}
+                    Dob={dob}
+                    Gender={gender}
+                    Email={email}
+                    Picture={picture}
+                    Country={country}
+                    Description={description}
+                    userData={userData}
+                    setUserData={setUserData}
+                  />
+                );
+              }
+            )}
         </UserListMainContainer>
       </Main>
     </>
