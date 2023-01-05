@@ -2,8 +2,11 @@ import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateIcon from "@mui/icons-material/Create";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 
 const IndivudualSection = ({
   Id,
@@ -15,26 +18,35 @@ const IndivudualSection = ({
   Picture,
   Country,
   Description,
+  userData,
+  setUserData,
 }) => {
   const [openDetails, setOpenDetails] = useState(false);
   const [editable, setEditable] = useState(false);
+  const [name, setName] = useState(First + " " + Last);
   const [age, setAge] = useState(Dob);
   const [gender, setGender] = useState(Gender);
   const [country, setCountry] = useState(Country);
   const [description, setDescription] = useState(Description);
 
   return (
-    <IndividualUserCard key={Id} onClick={() => setOpenDetails(Id)}>
-      <InitialCardDiv>
+    <IndividualUserCard key={Id}>
+      <InitialCardDiv onClick={() => setOpenDetails(!openDetails)}>
         <IconandNameMainDiv>
           <UserPicture src={Picture} />
-          <p style={{ fontWeight: "400", fontSize: "2.5vh" }}>
-            {First} {Last}
-          </p>
+          <NameInput
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={!editable}
+            style={{
+              border: editable ? "1px solid lightgrey" : "0px",
+              backgroundColor: "#fff",
+            }}
+          />
         </IconandNameMainDiv>
-        <KeyboardArrowDownIcon />
+        {openDetails ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
       </InitialCardDiv>
-      {openDetails === Id ? (
+      {openDetails ? (
         <div style={{ width: "100%" }}>
           <HorizontalInfoMain>
             <div>
@@ -98,11 +110,25 @@ const IndivudualSection = ({
               alignItems: "center",
             }}
           >
-            <DeleteIcon style={{ color: "red", marginRight: "1vh" }} />
-            <CreateIcon
-              style={{ color: "blue" }}
-              onClick={() => setEditable(true)}
-            />
+            {editable ? (
+              <>
+                <CancelIcon onClick={() => setEditable(false)} />
+                <ApplyIcon />
+              </>
+            ) : (
+              <>
+                <DeleteBinIcon
+                  onClick={() => {
+                    setUserData(userData.filter((item) => item.id !== Id));
+                    console.log(
+                      "wahid",
+                      userData.filter((item) => item.id !== Id)
+                    );
+                  }}
+                />
+                <EditIcon onClick={() => setEditable(true)} />
+              </>
+            )}
           </div>
         </div>
       ) : null}
@@ -157,6 +183,13 @@ const TitleText = styled("p")({
   padding: 0,
   marginBottom: "1vh",
 });
+const NameInput = styled("input")({
+  outline: "none",
+  borderRadius: "1vh",
+  padding: "1vh",
+  fontWeight: "400",
+  fontSize: "2.5vh",
+});
 const AgeInput = styled("input")({
   outline: "none",
   borderRadius: "1vh",
@@ -176,4 +209,43 @@ const CountyInput = styled("input")({
 const DescriptionTextArea = styled("textarea")({
   width: "90%",
   height: 120,
+});
+
+const CancelIcon = styled(CancelOutlinedIcon)({
+  color: "red",
+  marginRight: "1vh",
+  cursor: "pointer",
+  ":hover": {
+    boxShadow: "1px 1px 4px grey",
+    borderRadius: "50%",
+  },
+  fontSize: "4vh",
+});
+const ApplyIcon = styled(CheckCircleOutlineIcon)({
+  color: "green",
+  cursor: "pointer",
+  ":hover": {
+    boxShadow: "1px 1px 4px grey",
+    borderRadius: "50%",
+  },
+  fontSize: "4vh",
+});
+const DeleteBinIcon = styled(DeleteIcon)({
+  color: "red",
+  marginRight: "1vh",
+  cursor: "pointer",
+  ":hover": {
+    boxShadow: "1px 1px 4px grey",
+    borderRadius: "50%",
+  },
+  fontSize: "4vh",
+});
+const EditIcon = styled(CreateIcon)({
+  color: "blue",
+  cursor: "pointer",
+  ":hover": {
+    boxShadow: "1px 1px 4px grey",
+    borderRadius: "50%",
+  },
+  fontSize: "4vh",
 });

@@ -8,7 +8,7 @@ import IndivudualSection from "./IndividualSection/IndivudualSection";
 
 const MainPage = () => {
   const [userData, setUserData] = useState(Data);
-
+  console.log("krish", userData);
   return (
     <>
       <Main>
@@ -40,6 +40,8 @@ const MainPage = () => {
                   Picture={picture}
                   Country={country}
                   Description={description}
+                  userData={userData}
+                  setUserData={setUserData}
                 />
               );
             }
