@@ -86,6 +86,9 @@ const SearchBar = styled("div")({
   padding: "1vh",
   borderRadius: "1vh",
   width: "40%",
+  "@media screen and (max-width: 900px)": {
+    width: "100%",
+  },
 });
 const SearchInput = styled("input")({
   padding: "1vh",
@@ -95,13 +98,17 @@ const SearchInput = styled("input")({
   ":focus": {
     outline: "none",
   },
+  width: "100%",
 });
 const UserListMainContainer = styled("div")({
-  width: "100%",
+  width: "40%",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
+  "@media screen and (max-width: 900px)": {
+    width: "100%",
+  },
 });
 
 const Data = [
