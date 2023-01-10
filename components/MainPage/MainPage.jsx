@@ -4,90 +4,65 @@ import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateIcon from "@mui/icons-material/Create";
+import IndivudualSection from "./IndividualSection/IndivudualSection";
 
 const MainPage = () => {
-  const [openDetails, setOpenDetails] = useState(false);
+  const [userData, setUserData] = useState(Data);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  console.log("krish", userData);
   return (
     <>
       <Main>
         <SearchBar>
           <SearchIcon />
-          <SearchInput type={"search"} placeholder={"Search User"} />
+          <SearchInput
+            type={"search"}
+            placeholder={"Search User"}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </SearchBar>
         <UserListMainContainer>
-          {Data.map(
-            ({
-              id,
-              first,
-              last,
-              dob,
-              gender,
-              email,
-              picture,
-              country,
-              description,
-            }) => {
-              return (
-                <>
-                  <IndividualUserCard
-                    key={id}
-                    onClick={() => setOpenDetails(id)}
-                  >
-                    <InitialCardDiv>
-                      <IconandNameMainDiv>
-                        <UserPicture src={picture} />
-                        <p style={{ fontWeight: "400", fontSize: "2.5vh" }}>
-                          {first} {last}
-                        </p>
-                      </IconandNameMainDiv>
-                      <KeyboardArrowDownIcon />
-                    </InitialCardDiv>
-                    {openDetails === id ? (
-                      <div style={{ width: "100%" }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            width: "100%",
-                          }}
-                        >
-                          <div>
-                            <TitleText>Age</TitleText>
-                            <InfoText>19 Years</InfoText>
-                          </div>
-                          <div>
-                            <TitleText>Gender</TitleText>
-                            <InfoText>{gender}</InfoText>
-                          </div>
-                          <div>
-                            <TitleText>Country</TitleText>
-                            <InfoText>{country}</InfoText>
-                          </div>
-                        </div>
-                        <div>
-                          <TitleText>Description</TitleText>
-                          <InfoText>{description}</InfoText>
-                        </div>
-                        <div
-                          style={{
-                            display: "flex",
-                            justifyContent: "flex-end",
-                            alignItems: "center",
-                          }}
-                        >
-                          <DeleteIcon
-                            style={{ color: "red", marginRight: "1vh" }}
-                          />
-                          <CreateIcon style={{ color: "blue" }} />
-                        </div>
-                      </div>
-                    ) : null}
-                  </IndividualUserCard>
-                </>
-              );
-            }
-          )}
+          {userData
+            .filter((e) => {
+              if (searchQuery == "") {
+                return e;
+              } else {
+                return e.first
+                  .toLowerCase()
+                  .includes(searchQuery.toLowerCase());
+              }
+            })
+            .map(
+              ({
+                id,
+                first,
+                last,
+                dob,
+                gender,
+                email,
+                picture,
+                country,
+                description,
+              }) => {
+                return (
+                  <IndivudualSection
+                    Id={id}
+                    First={first}
+                    Last={last}
+                    Dob={dob}
+                    Gender={gender}
+                    Email={email}
+                    Picture={picture}
+                    Country={country}
+                    Description={description}
+                    userData={userData}
+                    setUserData={setUserData}
+                  />
+                );
+              }
+            )}
         </UserListMainContainer>
       </Main>
     </>
@@ -111,65 +86,29 @@ const SearchBar = styled("div")({
   padding: "1vh",
   borderRadius: "1vh",
   width: "40%",
+  "@media screen and (max-width: 900px)": {
+    width: "100%",
+  },
 });
 const SearchInput = styled("input")({
   padding: "1vh",
   borderRadius: "1vh",
-  border: "0px solid grey",
+  border: "0px",
   flex: 1,
   ":focus": {
     outline: "none",
   },
+  width: "100%",
 });
 const UserListMainContainer = styled("div")({
-  width: "100%",
+  width: "40%",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
   justifyContent: "center",
-});
-const IndividualUserCard = styled("div")({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "space-between",
-  border: "1px solid lightgrey",
-  cursor: "pointer",
-  padding: "1vh 2vh",
-  borderRadius: "1vh",
-  width: "40%",
-  marginTop: "2%",
-  boxShadow: "1px 1px 3px grey",
-  // ":hover": {
-  //   backgroundColor: "#f5f5f5",
-  // },
-});
-const InitialCardDiv = styled("div")({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  width: "100%",
-});
-const IconandNameMainDiv = styled("div")({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  flex: 1,
-});
-const UserPicture = styled("img")({
-  width: "4vw",
-  borderRadius: "50%",
-  boxShadow: "2px 3px 4px grey",
-  marginRight: "5%",
-});
-const TitleText = styled("p")({
-  color: "grey",
-  padding: 0,
-  marginBottom: "1vh",
-});
-const InfoText = styled("p")({
-  padding: 0,
-  margin: 0,
+  "@media screen and (max-width: 900px)": {
+    width: "100%",
+  },
 });
 
 const Data = [
