@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import React, { useEffect, useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -9,8 +8,6 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 
@@ -27,10 +24,25 @@ const IndivudualSection = ({
   userData,
   setUserData,
 }) => {
+  let dob = new Date(Dob);
+  //calculate month difference from current date in time
+  let month_diff = Date.now() - dob.getTime();
+
+  //convert the calculated difference in date format
+  let age_dt = new Date(month_diff);
+
+  //extract year from date
+  let year = age_dt.getUTCFullYear();
+
+  //now calculate the age of the user
+  let ageCounted = Math.abs(year - 1970);
+  console.log(ageCounted);
+
+  //states
   const [openDetails, setOpenDetails] = useState(false);
   const [editable, setEditable] = useState(false);
   const [name, setName] = useState(First + Last);
-  const [age, setAge] = useState(Dob);
+  const [age, setAge] = useState(ageCounted);
   const [gender, setGender] = useState(Gender);
   const [country, setCountry] = useState(Country);
   const [description, setDescription] = useState(Description);
@@ -64,20 +76,6 @@ const IndivudualSection = ({
     setOpen(false);
   };
 
-  let dob = new Date(Dob);
-  //calculate month difference from current date in time
-  let month_diff = Date.now() - dob.getTime();
-
-  //convert the calculated difference in date format
-  let age_dt = new Date(month_diff);
-
-  //extract year from date
-  let year = age_dt.getUTCFullYear();
-
-  //now calculate the age of the user
-  let ageCounted = Math.abs(year - 1970);
-  console.log(ageCounted);
-
   return (
     <>
       <IndividualUserCard key={Id}>
@@ -92,7 +90,7 @@ const IndivudualSection = ({
               disabled={!editable}
               style={{
                 border: editable ? "1px solid lightgrey" : "0px",
-                backgroundColor: "#fff",
+                backgroundColor: openDetails ? null : "#fff",
               }}
             />
           </IconandNameMainDiv>
